@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tapasyaaa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#d0f0f7] font-sans flex flex-col min-h-screen text-[#034d4d]">
+
+  <!-- Header -->
+  <header class="bg-[#a2d5c6] text-[#033f3f] text-center py-4 font-bold text-lg">
+    YATI
+  </header>
+
+  <!-- Main Chat Container -->
+  <main class="flex-grow flex flex-col max-w-xl w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+
+    <!-- Scrollable Messages Area -->
+    <div id="chat" class="flex-1 overflow-y-auto p-3 bg-[#e0f7f4]" aria-live="polite"></div>
+
+    <!-- Fixed Input Bar -->
+    <form id="chat-form" class="flex gap-2 p-3 bg-white border-t border-[#a2d5c6] sticky bottom-0">
+      <input type="text" id="user-input" placeholder="How are you feeling today?" required 
+             class="flex-grow rounded-full border border-[#a2d5c6] px-4 py-2 focus:outline-none focus:border-[#028080] focus:ring focus:ring-[#028080]">
+      <button type="submit" class="bg-[#028080] text-white rounded-full px-5 py-2 hover:bg-[#016868]">Send</button>
+    </form>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#a2d5c6] text-[#033f3f] text-center py-4 text-sm">
+    &copy; 2025 Tapasyaaa. All rights reserved.
+  </footer>
+
+<script>
+  const chat = document.getElementById('chat');
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('user-input');
+
+  function appendMessage(text, sender) {
+    const isUser = sender === 'user';
+    const row = document.createElement('div');
+    row.className = `flex items-end gap-2 mb-2 ${isUser ? 'justify-end' : 'justify-start'}`;
+
+    const avatar = document.createElement('img');
+    avatar.src = isUser
+      ? 'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+      : 'https://cdn-icons-png.flaticon.com/512/4712/4712105.png';
+    avatar.className = 'w-8 h-8 rounded-full';
+
+    const bubble = document.createElement('div');
+    bubble.textContent = text;
+    bubble.className = `max-w-[75%] px-4 py-2 rounded-2xl text-sm leading-snug 
+      ${isUser 
+        ? 'bg-[#a2d5c6] text-[#033f3f] rounded-br-none' 
+        : 'bg-[#028080] text-white rounded-bl-none'
+      }`;
+
+    if (isUser) {
+      row.appendChild(bubble);
+      row.appendChild(avatar);
+    } else {
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+    }
+
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function getBotResponse(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes('sad') || lower.includes('depressed')) {
+      return "I'm sorry you're feeling sad. Remember, you're not alone — it's okay to seek support.";
+    }
+    if (lower.includes('anxious') || lower.includes('anxiety')) {
+      return "Anxiety can be tough. Try deep breathing and grounding yourself in the moment.";
+    }
+    if (lower.includes('help') || lower.includes('support')) {
+      return "I'm here for you. Consider booking a session with a therapist if you want more help.";
+    }
+    if (lower.includes('suicide') || lower.includes('suicidal')) {
+      return "If you're having suicidal thoughts, please reach out immediately to a trusted person or helpline.";
+    }
+    if (lower.trim() === '') {
+      return "Please type something so I can assist you better.";
+    }
+    const fallback = [
+      "Thanks for sharing. How else can I support you today?",
+      "I'm listening. Tell me more.",
+      "That sounds important. Want to talk more about it?",
+      "I'm here to help in any way I can."
+    ];
+    return fallback[Math.floor(Math.random() * fallback.length)];
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    appendMessage(userText, 'user');
+    input.value = '';
+
+    const typingRow = document.createElement('div');
+    typingRow.className = 'flex items-end gap-2 justify-start mb-2';
+    const typingAvatar = document.createElement('img');
+    typingAvatar.src = 'https://cdn-icons-png.flaticon.com/512/4712/4712105.png';
+    typingAvatar.className = 'w-8 h-8 rounded-full';
+    const typingBubble = document.createElement('div');
+    typingBubble.textContent = '...typing';
+    typingBubble.className = 'max-w-[75%] px-4 py-2 rounded-2xl bg-[#028080] text-white rounded-bl-none text-sm';
+    typingRow.appendChild(typingAvatar);
+    typingRow.appendChild(typingBubble);
+    chat.appendChild(typingRow);
+    chat.scrollTop = chat.scrollHeight;
+
+    setTimeout(() => {
+      typingRow.remove();
+      appendMessage(getBotResponse(userText), 'bot');
+    }, 1000 + Math.random() * 1000);
+  });
+</script>
+
+</body>
+</html>
